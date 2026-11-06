@@ -1,5 +1,5 @@
 use axum::Router;
-// pub mod document;
+pub mod document;
 pub mod history;
 pub mod operations;
 pub mod storage;
