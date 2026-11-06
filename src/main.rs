@@ -53,7 +53,8 @@ fn apply_op(op: &Operations, data: String) -> String {
     result
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let data = String::from("Hello world");
     let op_result = apply_op(
         &Operations::Insert {
