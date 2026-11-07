@@ -10,7 +10,7 @@ async fn main() {
             position: 5,
             text: String::from(" beautiful"),
         },
-        data,
+        &data,
     );
 
     println!("OT'ed text: {:?}", op_result)
