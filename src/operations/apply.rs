@@ -99,4 +99,30 @@ mod tests {
 
         assert_eq!(insertion, String::from("Hello world."));
     }
+
+    #[test]
+    fn test_all_op() {
+        let data = String::from("Hello beautiful world");
+        let n = 5;
+        let i_pos = 5;
+        let deletion_pos = 5;
+        let retain = apply_op(&Operation::Retain { length: n }, &data);
+        assert_eq!(retain, String::from("Hello"));
+        let insertion = apply_op(
+            &Operation::Insert {
+                position: i_pos,
+                text: String::from(" rust world."),
+            },
+            &retain,
+        );
+        assert_eq!(insertion, String::from("Hello rust world."));
+        let deletion = apply_op(
+            &Operation::Delete {
+                position: deletion_pos,
+                length: 5,
+            },
+            &insertion,
+        );
+        assert_eq!(deletion, String::from("Hello world."));
+    }
 }
