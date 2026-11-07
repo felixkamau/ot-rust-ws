@@ -143,3 +143,33 @@ pub fn transform(a: &Operation, b: &Operation) -> Vec<Operation> {
         _ => vec![a.clone()],
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::operations::Operation;
+    #[test]
+    // Assuming B gets applied first.`
+    // When another insertion happens before or at your insertion
+    // postion your position must move forward.
+    fn test_insert_vs_insert() {
+        let op_a = Operation::Insert {
+            position: 6,
+            text: "beautiful ".to_string(),
+        };
+
+        let op_b = Operation::Insert {
+            position: 6,
+            text: "amazing ".to_string(),
+        };
+
+        let result = transform(&op_a, &op_b);
+        assert_eq!(
+            result,
+            vec![Operation::Insert {
+                position: 14,
+                text: "beautiful ".to_string()
+            }]
+        );
+    }
+}
