@@ -172,4 +172,27 @@ mod tests {
             }]
         );
     }
+
+    #[test]
+    fn test_insert_vs_delete() {
+        let op_a = Operation::Insert {
+            position: 6,
+            text: "amazing ".to_string(),
+        };
+
+        let op_b = Operation::Delete {
+            position: 6,
+            length: 10,
+        };
+
+        let result = transform(&op_a, &op_b);
+
+        assert_eq!(
+            result,
+            vec![Operation::Insert {
+                position: 6,
+                text: "amazing ".to_string()
+            }]
+        );
+    }
 }
