@@ -1,6 +1,10 @@
-use crate::operations::Operation;
+use std::io::Error;
 
-pub fn apply_op(op: &Operation, data: &str) -> String {
+use crate::operations::Operation;
+// Aliased result for the apply_op function
+pub type ApplyOp<T> = Result<T, Error>;
+
+pub fn apply_op(op: &Operation, data: &str) -> ApplyOp<String> {
     let mut result = data.to_string();
 
     match op {
@@ -33,7 +37,7 @@ pub fn apply_op(op: &Operation, data: &str) -> String {
         }
     }
 
-    result
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -51,7 +55,8 @@ mod tests {
                     text: String::from(" beautiful")
                 },
                 &data
-            ),
+            )
+            .unwrap(),
             String::from("Hello beautiful world.")
         );
     }
@@ -66,7 +71,8 @@ mod tests {
                     length: 10
                 },
                 &data
-            ),
+            )
+            .unwrap(),
             String::from("Hello world.")
         );
     }
@@ -76,7 +82,7 @@ mod tests {
         let data = String::from("Hello beautiful world.");
         let n = 5;
         assert_eq!(
-            apply_op(&Operation::Retain { length: n }, &data),
+            apply_op(&Operation::Retain { length: n }, &data).unwrap(),
             String::from("Hello")
         );
     }
@@ -86,7 +92,7 @@ mod tests {
         let data = String::from("Hello beautiful world.");
         let n = 5;
         let pos = 5;
-        let retain = apply_op(&Operation::Retain { length: n }, &data);
+        let retain = apply_op(&Operation::Retain { length: n }, &data).unwrap();
         assert_eq!(retain, String::from("Hello"));
 
         let insertion = apply_op(
@@ -95,7 +101,8 @@ mod tests {
                 text: String::from(" world."),
             },
             &retain,
-        );
+        )
+        .unwrap();
 
         assert_eq!(insertion, String::from("Hello world."));
     }
@@ -106,7 +113,7 @@ mod tests {
         let n = 5;
         let i_pos = 5;
         let deletion_pos = 5;
-        let retain = apply_op(&Operation::Retain { length: n }, &data);
+        let retain = apply_op(&Operation::Retain { length: n }, &data).unwrap();
         assert_eq!(retain, String::from("Hello"));
         let insertion = apply_op(
             &Operation::Insert {
@@ -114,7 +121,8 @@ mod tests {
                 text: String::from(" rust world."),
             },
             &retain,
-        );
+        )
+        .unwrap();
         assert_eq!(insertion, String::from("Hello rust world."));
         let deletion = apply_op(
             &Operation::Delete {
@@ -122,7 +130,8 @@ mod tests {
                 length: 5,
             },
             &insertion,
-        );
+        )
+        .unwrap();
         assert_eq!(deletion, String::from("Hello world."));
     }
 }
