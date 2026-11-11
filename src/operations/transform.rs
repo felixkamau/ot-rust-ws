@@ -108,34 +108,58 @@ pub fn transform(a: &Operation, b: &Operation) -> Vec<Operation> {
             let b_end = b_pos + b_len;
 
             if a_end <= *b_pos {
+                // A is completely before B
                 vec![Operation::Delete {
                     position: *a_pos,
                     length: *a_len,
                 }]
             } else if *a_pos >= b_end {
+                // A is completely after B
                 vec![Operation::Delete {
                     position: a_pos - b_len,
                     length: *a_len,
                 }]
             } else {
+                // There is an overlap
                 let overlap_start = (*a_pos).max(*b_pos);
                 let overlap_end = a_end.min(b_end);
                 let overlap = overlap_end.saturating_sub(overlap_start);
                 let remaining = a_len - overlap;
 
-                if remaining == 0 {
-                    vec![]
-                } else if *a_pos < *b_pos {
-                    vec![Operation::Delete {
+                let mut operations = Vec::new();
+
+                // Remaining part of A before B
+                if *a_pos < *b_pos {
+                    operations.push(Operation::Delete {
                         position: *a_pos,
-                        length: remaining,
-                    }]
-                } else {
-                    vec![Operation::Delete {
-                        position: *b_pos,
-                        length: remaining,
-                    }]
+                        length: b_pos - a_pos,
+                    });
                 }
+
+                // Remaining part of A after B
+                if a_end > b_end {
+                    operations.push(Operation::Delete {
+                        position: if *a_pos < *b_pos {
+                            *b_pos
+                        } else {
+                            a_pos - b_len
+                        },
+                        length: a_end - b_end,
+                    });
+                }
+
+                debug_assert_eq!(
+                    operations
+                        .iter()
+                        .map(|op| match op {
+                            Operation::Delete { length, .. } => *length,
+                            _ => 0,
+                        })
+                        .sum::<usize>(),
+                    remaining
+                );
+
+                operations
             }
         }
 
