@@ -195,4 +195,27 @@ mod tests {
             }]
         );
     }
+
+    #[test]
+    fn test_delete_vs_delete() {
+        let op_a = Operation::Delete {
+            position: 6,
+            length: 5,
+        };
+
+        let op_b = Operation::Delete {
+            position: 7,
+            length: 4,
+        };
+
+        let result = transform(&op_a, &op_b);
+
+        assert_eq!(
+            result,
+            vec![Operation::Delete {
+                position: 6,
+                length: 1
+            }]
+        );
+    }
 }
